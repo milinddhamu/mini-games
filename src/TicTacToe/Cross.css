@@ -1,0 +1,50 @@
+svg {
+	height:60px;
+	width:60px;
+}
+
+
+
+#path {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 400;
+  
+  animation: checker 0.4s linear;
+  animation-fill-mode:forwards;
+}
+
+@keyframes checker {
+  from {
+    stroke-dashoffset: 320;
+  }
+  to {
+    stroke-dashoffset: 400;
+  }
+}
+
+
+#path2 {
+  stroke-dasharray: 430;
+  stroke-dashoffset: 800;
+  
+  animation: x 0.3s linear ;
+  animation-fill-mode:forwards;
+}
+
+#path3 {
+  stroke-dasharray: 430;
+  stroke-dashoffset: 800;
+  
+  animation: x 0.3s linear ;
+  animation-fill-mode:forwards;
+  animation-delay:0.1s;
+}
+
+@keyframes x {
+  from {
+     stroke-dasharray: 430;
+  }
+  to {
+     stroke-dasharray: 400;
+  }
+}

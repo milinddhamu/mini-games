@@ -2,26 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+/* ProgressBarCircle.css */
+
+.progress-container {
+  width: 100px;
+  height: 100px;
+  position: relative;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+.progress-ring {
+  width: 100px;
+  height: 100px;
+  fill: transparent;
+  stroke-dasharray: 251;
+  stroke-dashoffset: 251;
+}
+
+.progress-ring-circle {
+  fill: transparent;
+  stroke: #ccc;
+  stroke-width: 8;
+}
+
+.animate-grow {
+  animation: grow 0.5s ease-out forwards;
+}
+
+@keyframes grow {
+  0% {
+    stroke-dashoffset: 251;
   }
-}
-
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  100% {
+    stroke-dashoffset: 0;
+  }
 }
