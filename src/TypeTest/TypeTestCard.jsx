@@ -2,16 +2,16 @@ import React from "react";
 import {Card, CardFooter,CardHeader,CardBody, Image, Button} from "@nextui-org/react";
 import { useRouter } from "next/navigation"
 
-export default function TicTacToeCard() {
+export default function TypeTestCard() {
   const router = useRouter();
   return (
     <Card 
       isPressable
       className="py-1"
-      onPress={()=> router.push("/tictactoe")}
+      onPress={()=> console.log("Upcoming game")}
       >
     <CardHeader className="pb-0 px-4 flex-col items-start">
-      <h4 className="font-bold text-large">Tic Tac Toe</h4>
+      <h4 className="font-bold text-large">Type Test</h4>
       <p className="text-tiny uppercase font-bold">Multiplayer , Online</p>
       <small className="text-default-500">1 v 1</small>
     </CardHeader>
@@ -23,7 +23,7 @@ export default function TicTacToeCard() {
         classNames={{
           img:"!rounded"
         }}
-        src="/TicTacToe/TicTacToeGif.gif"
+        src="/TypeTest/TypeTestGif.gif"
         width={370}
       />
     </CardBody>

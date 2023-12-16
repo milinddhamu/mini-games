@@ -1,7 +1,6 @@
 
 import './globals.css'
 import {Providers} from "./providers";
-import {Button} from "@nextui-org/button";
 import Topbar from "@/Components/Topbar";
 
 export const metadata = {
@@ -11,7 +10,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className='dark'>
       <body>
         <Providers>
           <Topbar />
