@@ -14,7 +14,8 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
   const [winner, setWinner] = useState(null);
   const [roomId, setRoomId] = useState('');
   const [currentPlayer, setCurrentPlayer] = useState(null);
-  
+  const [playerJoined, setPlayerJoined] = useState(false);
+
   useEffect(() => {
     const handleGameUpdate = (data) => {
       setTurn(data.turn === socket.id);
@@ -42,6 +43,18 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
       // Disconnect or perform any necessary cleanup
     };
   }, [playerName, gameRoomId, currentAction]);
+  useEffect(() => {
+    socket.on('playerJoined', (playerName) => {
+      // Update the state to indicate that the player has joined the room
+      setPlayerJoined(true);
+      console.log(`${playerName} has joined the room`);
+    });
+  
+    // Clean up the event listener when the component unmounts
+    return () => {
+      socket.off('playerJoined');
+    };
+  }, [socket]);
 
   useEffect(()=>{
     if(winner){
@@ -52,6 +65,7 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
   },[winner])
 
   const handleCellClick = (position) => {
+    if (playerJoined) {
     if(winner || calculateWinner(board)) {
 
       console.log("Game is over")
@@ -64,7 +78,10 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
       setBoard(updatedBoard);
       socket.emit('cellClick', { position, playerName, gameRoomId });
     }
-  };
+    } else {
+      console.log("Wait until player join")
+    }
+  }
 
   const resetGame = () => {
     setBoard([

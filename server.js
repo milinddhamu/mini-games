@@ -79,6 +79,7 @@ io.on('connection', (socket) => {
 
       if (existingRoom.players.length === 2) {
         existingRoom.currentPlayerName = existingRoom.players.find(player => player.id !== socket.id).name;
+        io.to(room).emit('playerJoined', existingRoom.currentPlayerName);
       }
 
       io.to(room).emit('gameUpdate', existingRoom);
