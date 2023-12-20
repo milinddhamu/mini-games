@@ -135,9 +135,8 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
         </div>
         <div className={boardDesign.gridContainer}>
         {board.map((item,i)=>(
-          <button onClick={()=> handleCellClick(i)} key={i} className={`flex justify-center items-center w-full aspect-square rounded-xl transition-all ease-linear duration-300 ${isMyTurn ? "border border-green-600 hover:bg-green-600/30" : "border border-red-600 hover:bg-red-600/30"}`}>
-            {item.value === "X" && <Cross className="scale-125" />}
-            {item.value === "O" && <Ring/>}
+          <button onClick={()=> handleCellClick(i)} key={i} className={`flex justify-center items-center w-full aspect-square transition-all ease-linear duration-300 ${isMyTurn ? "border border-green-600 hover:bg-green-600/30" : "border border-red-600 hover:bg-red-600/30"}`}>
+            {item.value === "X" ? <Cross className="scale-125" /> : <Ring/>}
           </button>
         ))}
         </div> 
