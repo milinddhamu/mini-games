@@ -42,6 +42,10 @@ const calculateWinner = (board) => {
   return null;
 };
 
+app.get('/', (req, res) => {
+  res.send('Hello, World! This is your server responding.');
+});
+
 io.on('connection', (socket) => {
   console.log(`A user connected ${socket.id}`);
 
