@@ -180,6 +180,24 @@ io.on('connection', (socket) => {
   socket.on('disconnect', () => {
     console.log('A user disconnected');
     // Handle disconnect logic
+    const roomToRemove = Object.entries(rooms).find(([room, { players }]) =>
+    players.some(player => player.id === socket.id)
+  );
+
+  if (roomToRemove) {
+    const [room, { players }] = roomToRemove;
+    // Check if the disconnected user was the room creator
+    const isRoomCreator = players[0].id === socket.id;
+    // Remove the room from the rooms object
+    delete rooms[room];
+
+    console.log(`Room ${room} has been removed because the room creator left.`);
+
+    if (!isRoomCreator && players.length > 1) {
+      const remainingPlayer = players.find(player => player.id !== socket.id);
+      io.to(room).emit('roomClosed', `The room has been closed by ${remainingPlayer.name}.`);
+    }
+  }
   });
 });
 
