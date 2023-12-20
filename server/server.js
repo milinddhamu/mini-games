@@ -72,27 +72,54 @@ io.on('connection', (socket) => {
     }
   });
 
+  // socket.on('joinRoom', ({ playerName, gameRoomId }) => {
+  //   // Logic for joining a room
+  //   const room = gameRoomId.trim().toLowerCase();
+  //   const existingRoom = rooms[room];
+
+  //   if (existingRoom && existingRoom.players.length < 2 ) {
+  //     socket.join(room);
+  //     existingRoom.players.push({ name: playerName, id: socket.id });
+
+  //     if (existingRoom.players.length === 2) {
+  //       existingRoom.currentPlayerName = existingRoom.players.find(player => player.id !== socket.id).name;
+  //       io.to(room).emit('playerJoined', existingRoom.currentPlayerName);
+  //     }
+
+  //     io.to(room).emit('gameUpdate', existingRoom);
+  //     console.log(`${playerName} joined room ${room}`);
+  //   } else {
+  //     // Handle room full or room does not exist
+  //     socket.emit('roomError', 'Room is full or does not exist');
+  //   }
+  // });
+
+
   socket.on('joinRoom', ({ playerName, gameRoomId }) => {
     // Logic for joining a room
     const room = gameRoomId.trim().toLowerCase();
     const existingRoom = rooms[room];
-
-    if (existingRoom && existingRoom.players.length < 2 ) {
+  
+    if (existingRoom && existingRoom.players.length < 2) {
       socket.join(room);
       existingRoom.players.push({ name: playerName, id: socket.id });
-
+  
       if (existingRoom.players.length === 2) {
         existingRoom.currentPlayerName = existingRoom.players.find(player => player.id !== socket.id).name;
         io.to(room).emit('playerJoined', existingRoom.currentPlayerName);
       }
-
+  
       io.to(room).emit('gameUpdate', existingRoom);
       console.log(`${playerName} joined room ${room}`);
+    } else if (existingRoom && existingRoom.players.length >= 2) {
+      // Handle room full
+      socket.emit('roomError', 'Room is full');
     } else {
-      // Handle room full or room does not exist
-      socket.emit('roomError', 'Room is full or does not exist');
+      // Handle room does not exist
+      socket.emit('roomError', 'Room does not exist');
     }
   });
+  
 
   socket.on('cellClick', ({ position, playerName, gameRoomId }) => {
     const room = gameRoomId.trim().toLowerCase();
