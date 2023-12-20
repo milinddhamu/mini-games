@@ -9,7 +9,7 @@ app.use(cors()); // Enable CORS for all routes
 
 const io = socketIo(server, {
   cors: {
-    origin: "https://mini-games-production.up.railway.app/", // Replace with your React app's origin
+    origin: "https://mini-games-milinddhamu.vercel.app/", // Replace with your React app's origin
     methods: ["GET", "POST"]
   }
 });
