@@ -49,6 +49,11 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
       setPlayerJoined(true);
       console.log(`${playerName} has joined the room`);
     });
+    socket.on('roomError', (errorMessage) => {
+      console.log(`Error: ${errorMessage}`);
+      // Optionally, you can update your UI to inform the user about the error
+      // For example, you could display an alert or update a status message on the page
+    });
   
     // Clean up the event listener when the component unmounts
     return () => {
