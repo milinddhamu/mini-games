@@ -1,3 +1,4 @@
+"use client"
 
 import TestBase from "@/TypeTest/TestBase";
 
