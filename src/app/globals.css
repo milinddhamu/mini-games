@@ -36,3 +36,31 @@
     stroke-dashoffset: 0;
   }
 }
+
+
+@keyframes fade-in-out {
+  0%, 100% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in-out {
+  animation: fade-in-out 1.2s linear infinite;
+}
+
+@keyframes cursor-shrink-grow {
+  0%, 100% {
+    transform: scaleY(1);
+  }
+  50% {
+    transform: scaleY(0);
+  }
+}
+
+.animate-cursor-shrink-grow {
+  transform-origin: center;
+  animation: cursor-shrink-grow 1s ease-in-out infinite;
+}
