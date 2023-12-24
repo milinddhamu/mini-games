@@ -54,7 +54,7 @@ const TestBase = ({sentence}) => {
           }
           
           return (
-          <span key={`${word}${wordIndex}`} className={` ${INPUT_TEXT_WORDS_ARRAY?.length > wordIndex + 1 && EQUAL_INDEX_WORD !== word ? "border-b-2" : ""} `}>
+          <span key={`word_${word}_${wordIndex}`} className={` ${INPUT_TEXT_WORDS_ARRAY?.length > wordIndex + 1 && EQUAL_INDEX_WORD !== word ? "border-b-2" : ""} `}>
             {word.split("").map((letter, letterIndex) => {
               const LETTER_ARRAY_OF_EQUAL_WORD = EQUAL_INDEX_WORD?.split("");
               return (
