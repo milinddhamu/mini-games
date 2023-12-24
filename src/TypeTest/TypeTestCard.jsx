@@ -8,7 +8,7 @@ export default function TypeTestCard() {
     <Card 
       isPressable
       className="py-1"
-      onPress={()=> router.push("/typetest")}
+      onPress={()=> console.log("Upcoming game")}
       >
     <CardHeader className="pb-0 px-4 flex-col items-start">
       <h4 className="font-bold text-large">Type Test</h4>
