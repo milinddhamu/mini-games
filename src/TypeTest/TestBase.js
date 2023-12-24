@@ -58,7 +58,7 @@ const TestBase = ({sentence}) => {
             {word.split("").map((letter, letterIndex) => {
               const LETTER_ARRAY_OF_EQUAL_WORD = EQUAL_INDEX_WORD?.split("");
               return (
-                <>
+                
                 <span key={`letter_${wordIndex}_${letterIndex}_${letter}`} className={`${LETTER_ARRAY_OF_EQUAL_WORD?.at(letterIndex) === undefined ? "text-pink-500/50" : LETTER_ARRAY_OF_EQUAL_WORD?.length <= letterIndex
                               ? "text-red-500"
                               : LETTER_ARRAY_OF_EQUAL_WORD?.at(letterIndex) === letter
@@ -66,7 +66,7 @@ const TestBase = ({sentence}) => {
                               : "text-red-500"}`}>
                   {letter === " " ? "\u00A0" : letter}
                 </span>
-                </>
+                
               );
             })}
           </span>
