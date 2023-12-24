@@ -39,14 +39,14 @@ const TestBase = ({sentence}) => {
   return (
     <>
     <div className="flex justify-center items-center h-screen w-screen" >
-      <div className="relative test-base-area z-30" onClick={handleClick}>
+      <div className="relative z-30" onClick={handleClick}>
         {!isEditing &&
         <div className='absolute m-4 flex h-[156px] sm:h-[150px] w-full max-w-6xl justify-center items-center'>
           Click on this area to continue
         </div>
         }
       <div className={` flex flex-wrap gap-2 content-start  w-full max-w-6xl max-h-fit h-[156px] sm:h-[150px] text-pink-500/50 p-4 font-medium font-mono text-xl sm:text-3xl text-center tracking-wide m-4 select-none scrollbar-hide z-40 ${!isEditing ? "blur overflow-hidden" : "overflow-auto"}`} >
-        {isEditing && <div className={`absolute mt-[3px] ml-3`}><AnimatedCaret /></div>}
+        
         {sentence.split(" ").map((word, wordIndex) => {
           const EQUAL_INDEX_WORD = INPUT_TEXT_WORDS_ARRAY.at(wordIndex);
           if (EQUAL_INDEX_WORD?.length > word.length) {
