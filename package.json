@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@formkit/auto-animate": "^0.8.1",
     "@nextui-org/modal": "^2.0.28",
     "@nextui-org/react": "^2.2.9",
     "cors": "^2.8.5",

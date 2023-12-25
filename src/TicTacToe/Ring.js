@@ -6,10 +6,9 @@ const Ring = () => {
   const [mounted, setMounted] = useState(false);
   const { theme } = useTheme();
 
-  const themeColor = theme ==="dark" ? "#FFFFFF" : "#000000"
+  const themeColor = theme === "dark" ? "#FFFFFF" : "#000000"
 
   useEffect(() => {
-    // After the component is mounted, set 'mounted' to true
     setMounted(true);
   }, []);
 
