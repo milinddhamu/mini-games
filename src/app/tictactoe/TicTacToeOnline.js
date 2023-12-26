@@ -1,3 +1,4 @@
+"use client"
 import React, { useEffect, useState } from 'react';
 import io from 'socket.io-client';
 import { initialBoard,boardDesign, calculateWinner, isDraw } from './TicTacToeLogic';
@@ -78,9 +79,11 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
     }
     console.log("cell clicked")
     if (turn && board[position].value === '' && !winner) {
-      const updatedBoard = [...board];
-      updatedBoard[position].value = turn ? 'O' : 'X';
-      setBoard(updatedBoard);
+      setBoard((prevBoard) => {
+        const updatedBoard = [...prevBoard];
+        updatedBoard[position].value = turn ? 'O' : 'X';
+        return updatedBoard;
+      });
       socket.emit('cellClick', { position, playerName, gameRoomId });
     }
     } else {

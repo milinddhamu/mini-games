@@ -16,7 +16,7 @@ export default function TicTacToeGame(){
       const updatedBoard = [...board];
       updatedBoard[position].value = turn ? 'O' : 'X';
       setBoard(updatedBoard);
-      setTurn(!turn);
+      setTurn((prevTurn)=> !prevTurn);
     } else if(calculateWinner(board)) {
       resetGame()
     }
