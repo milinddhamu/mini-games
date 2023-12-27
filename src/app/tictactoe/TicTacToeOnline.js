@@ -7,7 +7,7 @@ import Cross from "@/TicTacToe/Cross";
 import Confetti from 'react-confetti';
 import {Button} from "@nextui-org/button";
 
-const socket = io('https://mini-games-production.up.railway.app/'); // Replace with your server URL
+const socket = io('localhost:3001/tictactoe'); // Replace with your server URL
 
 const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
   const [turn, setTurn] = useState(true);
@@ -44,6 +44,7 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
       // Disconnect or perform any necessary cleanup
     };
   }, [playerName, gameRoomId, currentAction]);
+  
   useEffect(() => {
     socket.on('playerJoined', (playerName) => {
       // Update the state to indicate that the player has joined the room

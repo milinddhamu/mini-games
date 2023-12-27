@@ -5,10 +5,11 @@ import {Tooltip} from "@nextui-org/react";
 export default function TypeTestResults({data}){
   const resultMetrics = [
     { name: "Words Per Minute", data: data?.wordsPerMinute || 0 },
-    { name: "Correct Words", data: data?.correctWords || 0 },
-    { name: "Incorrect Words", data: data?.incorrectWords || 0 },
-    { name: "Skipped Words", data: data?.skippedWords || 0 },
-    { name: "Extra Words", data: data?.extraWords || 0 },
+    { name: "Correct Words", data: data?.correctChars || 0 },
+    { name: "Incorrect Words", data: data?.incorrectChars || 0 },
+    { name: "Skipped Words", data: data?.skippedChars || 0 },
+    { name: "Extra Words", data: data?.extraChars || 0 },
+    { name: "Accuracy", data: data?.extraChars || 0 },
   ];
 
   function handleReplace(){
