@@ -5,19 +5,25 @@ import { useRef, useState, useEffect } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import AnimatedCaret from './AnimatedCaret';
 import { useTheme } from "next-themes";
-import { PiCursorClick } from "react-icons/pi";
+import { BsCursorFill } from "react-icons/bs";
 import TypeTestResults from "./TypeTestResults"
-export default function TestBase({ sentence }) {
+import dataset from "@/app/typetest/data";
+
+export default function TestBase() {
   const { theme, setTheme } = useTheme()
   const [text, setText] = useState("");
-  const [givenSentence, setGivenSentence] = useState(sentence);
+  const [givenSentence, setGivenSentence] = useState(()=>{
+    const shuffledDataset = dataset.sort(() => Math.random() - 0.5);
+    const randomSentence = shuffledDataset.length > 0 ? shuffledDataset[0] : "";
+    return randomSentence
+  });
   const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef(null);
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [result, setResult] = useState(null);
   const [wordsMapParent] = useAutoAnimate(/* optional config */)
-
+  
   const handleBlur = (e) => {
     // Prevent the input from losing focus
     e.preventDefault();
@@ -56,17 +62,17 @@ export default function TestBase({ sentence }) {
 
   useEffect(() => {
     if (timeElapsed === 15) {
-      const results = calculateResults(sentence, text, timeElapsed);
+      const results = calculateResults(givenSentence, text, timeElapsed);
       setResult(results);
       setShowResults(true);
       setIsEditing(false);
     }
-  }, [timeElapsed , sentence , text]);
+  }, [timeElapsed , givenSentence , text]);
 
-  const calculateResults = (givenSentence, givenText, timeElapsed) => {
-    const givenWords = givenSentence.split(" ");
+  const calculateResults = (sentence, givenText, timeElapsed) => {
+    const givenWords = sentence.split(" ");
     const typedWords = givenText.trim().split(/\s+/);
-    const totalWords = givenWords.length;
+    const totalWords = Math.max(givenWords.length, typedWords.length);
   
     // Calculate correct, incorrect, skipped, and extra words
     let correctWords = 0;
@@ -75,44 +81,71 @@ export default function TestBase({ sentence }) {
     let extraWords = 0;
   
     for (let i = 0; i < totalWords; i++) {
-      if (typedWords[i] === givenWords[i]) {
+      const givenWord = givenWords[i] || ""; // Use an empty string if the word doesn't exist
+      const typedWord = typedWords[i] || "";
+  
+      if (typedWord === givenWord) {
         correctWords++;
-      } else if (!typedWords[i]) {
+      } else if (!typedWord) {
         skippedWords++;
       } else {
         incorrectWords++;
+        extraWords++;
       }
     }
   
-    // Calculate words per minute
-    const wordsPerMinute = +(correctWords / timeElapsed * 60).toFixed(2);  
+    // Calculate accuracy percentage
+    const accuracy = +((correctWords / (correctWords + incorrectWords)) * 100).toFixed(2);
+  
+    // Calculate words per minute based on correct words
+    const wordsPerMinute = Math.floor((typedWords.length / timeElapsed) * 60);
+  
     return {
       wordsPerMinute,
       correctWords,
       incorrectWords,
       skippedWords,
       extraWords,
+      accuracy,
     };
   };
   
+  const handleRestart = () => {
+    if(showResults){
+      setShowResults(false)
+      setText("");
+      setTimeElapsed(0);
+      setResult(null);
+
+    }
+  }
+  useEffect(()=>{
+    if(!showResults && result === null ){
+      const shuffledDataset = dataset.sort(() => Math.random() - 0.5);
+    const randomSentence = shuffledDataset.length > 0 ? shuffledDataset[0] : "";
+      setGivenSentence(randomSentence);
+      handleClick();
+    }
+
+  },[showResults,result])
 
   return (
     <>
       {showResults ?
-      <TypeTestResults data={result} /> :
+      <TypeTestResults data={result} handleRestart={handleRestart} /> :
       <div className="flex flex-col justify-center items-center w-full h-full" >
-        <div className="flex w-full justify-between items-center max-w-7xl">
-        <h2 className=" text-2xl text-start w-full  px-4 font-bold">{INPUT_TEXT_WORDS_ARRAY[0] === "" ? 0 : INPUT_TEXT_WORDS_ARRAY.length} / {sentence.split(" ").length}</h2>
-        <h2 className=" text-2xl text-end w-full px-4 font-bold">{"00:"}{timeElapsed < 10 ? `0${timeElapsed}` : timeElapsed}</h2>
-        </div>
-        <div className="relative test-base-area z-30 p-4" onClick={handleClick}>
+        <div className="relative test-base-area z-30 p-4 hover:cursor-pointer" onClick={handleClick}>
           {!isEditing &&
-            <div className={`absolute flex w-full max-w-7xl text-xl font-semibold tracking-widest h-full justify-center items-center ${theme === "dark" ? "bg-black/10" : "bg-white/10"} uppercase`}>
-              Click on this area to continue <PiCursorClick className="mx-4 text-3xl" />
+            <div className={`absolute flex w-full max-w-7xl min-w-7xl text-md font-semibold tracking-widest h-full justify-center items-center ${theme === "dark" ? "bg-black/10" : "bg-white/10"} uppercase`}>
+              <BsCursorFill className="mx-4 text-2xl" /> Click on this area to continue 
             </div>
           }                                                 {/* h-[156px] sm:h-[150px] used for below */}
           <div className={` flex flex-wrap content-start w-full max-w-7xl  text-slate-500 p-4 font-medium font-mono text-2xl sm:text-3xl tracking-wide select-none scrollbar-hide z-40 snap-y ${!isEditing ? "blur overflow-hidden" : ""}`} ref={wordsMapParent} >
-            {givenSentence.split(" ").map((word, wordIndex) => {
+          <div className="flex w-full justify-between items-center max-w-7xl py-4">
+            <h2 className=" text-2xl text-start w-full font-bold">{INPUT_TEXT_WORDS_ARRAY[0] === "" ? 0 : INPUT_TEXT_WORDS_ARRAY.length} / {givenSentence?.split(" ").length}</h2>
+            <h2 className=" text-2xl text-end w-full font-bold">{"00:"}{timeElapsed < 10 ? `0${timeElapsed}` : timeElapsed}</h2>
+          </div>
+            {givenSentence?.split(" ").map((word, wordIndex) => {
               const EQUAL_INDEX_WORD_INPUT = INPUT_TEXT_WORDS_ARRAY.at(wordIndex);
               const defaultWord = word;
               if (EQUAL_INDEX_WORD_INPUT?.length > word.length) {

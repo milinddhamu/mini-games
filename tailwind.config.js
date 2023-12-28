@@ -12,6 +12,9 @@ module.exports = {
   ],
   theme: {
     extend: {
+      letterSpacing:{
+        tightest: '-.085em',
+      },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
         'gradient-conic':
