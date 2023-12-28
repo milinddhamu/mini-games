@@ -65,3 +65,14 @@
   transform-origin: center;
   animation: cursor-shrink-grow 1s ease-in-out infinite;
 }
+
+.threeDShadowLight {
+  box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
+}
+.threeDShadowDark {
+  box-shadow: rgba(255, 255, 255, 0.1) 0px 2px 4px, rgba(255, 255, 255, 0.15) 0px 7px 13px -3px, rgba(255, 255, 255, 0.10) 0px -3px 0px inset;
+}
+
+.invertedShadowLight {
+  box-shadow: rgba(50, 50, 93, 0.25) 0px 30px 60px -12px inset, rgba(0, 0, 0, 0.3) 0px 18px 36px -18px inset;
+}
