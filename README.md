@@ -1,4 +1,8 @@
+Certainly! Below is an updated version of the README with added links and a banner:
+
 # WebDuels - Mini Games Project
+
+![WebDuels Banner](url-to-your-banner-image)
 
 ## Overview
 
@@ -56,15 +60,15 @@ npm start
 
 ## Games
 
-### Tic Tac Toe (1v1 - Single Screen)
+### [Tic Tac Toe (1v1 - Single Screen)](https://webduels.vercel.app/tictactoe)
 
 Challenge a friend to a classic game of Tic Tac Toe on a single screen. Enjoy the timeless fun of this strategic game in a friendly duel.
 
-### Tic Tac Toe (1v1 - Online Room)
+### [Tic Tac Toe (1v1 - Online Room)](https://webduels.vercel.app/tictactoe)
 
 Experience the thrill of playing Tic Tac Toe in real-time against a friend online. Create or join a room, and let the dueling begin with the power of WebSockets.
 
-### TypeTest (1v1)
+### [TypeTest (1v1)](https://webduels.vercel.app/typetest)
 
 Put your typing skills to the test in a 1v1 TypeTest challenge. With a custom caret and a results page, compete against your friend to see who types the fastest and most accurately. You have 15 seconds to showcase your typing prowess.
 
