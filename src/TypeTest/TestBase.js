@@ -1,16 +1,17 @@
 "use client"
 
-
 import { useRef, useState, useEffect } from 'react';
 import { useAutoAnimate } from '@formkit/auto-animate/react'
 import AnimatedCaret from './AnimatedCaret';
+import Scoreboard from './Scoreboard';
 import { useTheme } from "next-themes";
 import { BsCursorFill } from "react-icons/bs";
-import TypeTestResults from "./TypeTestResults"
+import MemoizedTypeTestResults from "./TypeTestResults"
 import dataset from "@/app/typetest/data";
+import { useDisclosure} from "@nextui-org/react";
 
 export default function TestBase() {
-  const { theme, setTheme } = useTheme()
+  const { theme, setTheme } = useTheme();
   const [text, setText] = useState("");
   const [givenSentence, setGivenSentence] = useState(()=>{
     const shuffledDataset = dataset.sort(() => Math.random() - 0.5);
@@ -22,10 +23,11 @@ export default function TestBase() {
   const [timeElapsed, setTimeElapsed] = useState(0);
   const [showResults, setShowResults] = useState(false);
   const [result, setResult] = useState(null);
-  const [wordsMapParent] = useAutoAnimate(/* optional config */)
+  const [isSameTest, setIsSameTest] = useState(null);
+  const [wordsMapParent] = useAutoAnimate(/* optional config */);
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
   
   const handleBlur = (e) => {
-    // Prevent the input from losing focus
     e.preventDefault();
     setIsEditing(false)
   };
@@ -37,6 +39,9 @@ export default function TestBase() {
     !isEditing && setIsEditing(true);
     if (inputRef.current) {
       inputRef.current.focus();
+    };
+    if(isSameTest !== null){
+      setIsSameTest(null);
     }
   };
 
@@ -50,7 +55,7 @@ export default function TestBase() {
 
   useEffect(() => {
     let timer;
-    if (isEditing) {
+    if (isEditing && timeElapsed <= 15) {
       timer = setInterval(() => {
         setTimeElapsed((prevTime) => prevTime + 1);
       }, 1000);
@@ -116,34 +121,60 @@ export default function TestBase() {
       setText("");
       setTimeElapsed(0);
       setResult(null);
+      setIsSameTest(null);
+    };
+    
+  };
 
-    }
-  }
-  useEffect(()=>{
-    if(!showResults && result === null ){
+  useEffect(() => {
+    if (!showResults && result === null) {
       const shuffledDataset = dataset.sort(() => Math.random() - 0.5);
-    const randomSentence = shuffledDataset.length > 0 ? shuffledDataset[0] : "";
-      setGivenSentence(randomSentence);
+      const randomSentence = shuffledDataset.length > 0 ? shuffledDataset[0] : "";
+      
+      if (!isSameTest) {
+        setGivenSentence(randomSentence);
+      }
+
       handleClick();
     }
+  }, [isSameTest, showResults, result]);
+  
+  useEffect(()=>{
+    if(result){
+      const storedResults = JSON.parse(localStorage.getItem('results')) || [];
+      storedResults.push(result);
 
-  },[showResults,result])
+      // Keep only the last 5 results
+      const lastFiveResults = storedResults.slice(-10);
+
+      // Update localStorage with the last 5 results
+      localStorage.setItem('results', JSON.stringify(lastFiveResults));
+    }
+  },[result]);
 
   return (
     <>
-      {showResults ?
-      <TypeTestResults data={result} handleRestart={handleRestart} /> :
-      <div className="flex flex-col justify-center items-center w-full h-full" >
-        <div className="relative test-base-area z-30 p-4 hover:cursor-pointer" onClick={handleClick}>
+        <div className="flex flex-col justify-center items-center w-full h-full relative" >
+        {!isEditing && <div className="absolute flex w-full justify-center p-4 top-5">
+          <button onClick={onOpen} id="Scoreboard">
+          <h1 className="text-violet-400/70 hover:text-violet-400 hover:underline hover:curor-pointer font-mono text-xl font-bold transition-all">Recent Scores &#x1F6C8;</h1>
+          </button>
+        </div>}
+      {
+      showResults ?
+      <MemoizedTypeTestResults data={result} handleRestart={handleRestart} handleStartSame={setIsSameTest} /> :
+        <div className="relative test-base-area max-w-7xl z-30 hover:cursor-pointer" onClick={handleClick}>
           {!isEditing &&
-            <div className={`absolute flex w-full max-w-7xl min-w-7xl text-md font-semibold tracking-widest h-full justify-center items-center ${theme === "dark" ? "bg-black/10" : "bg-white/10"} uppercase`}>
-              <BsCursorFill className="mx-4 text-2xl" /> Click on this area to continue 
+            <div className={`absolute flex w-full text-md font-semibold tracking-widest h-full justify-center gap-2 items-center uppercase pt-14`}>
+              <BsCursorFill className="text-2xl" /> Click on this area to continue 
             </div>
-          }                                                 {/* h-[156px] sm:h-[150px] used for below */}
-          <div className={` flex flex-wrap content-start w-full max-w-7xl  text-slate-500 p-4 font-medium font-mono text-2xl sm:text-3xl tracking-wide select-none scrollbar-hide z-40 snap-y ${!isEditing ? "blur overflow-hidden" : ""}`} ref={wordsMapParent} >
+          }
+                                                           {/* h-[156px] sm:h-[150px] used for below */}
+          <div className="flex justify-center items-center w-full">
+          <div className={` flex flex-wrap content-start w-full text-slate-500 p-6 font-medium font-mono text-lg sm:text-3xl tracking-wide select-none scrollbar-hide z-40 snap-y ${!isEditing ? "blur overflow-hidden" : ""}`} ref={wordsMapParent} >
           <div className="flex w-full justify-between items-center max-w-7xl py-4">
-            <h2 className=" text-2xl text-start w-full font-bold">{INPUT_TEXT_WORDS_ARRAY[0] === "" ? 0 : INPUT_TEXT_WORDS_ARRAY.length} / {givenSentence?.split(" ").length}</h2>
-            <h2 className=" text-2xl text-end w-full font-bold">{"00:"}{timeElapsed < 10 ? `0${timeElapsed}` : timeElapsed}</h2>
+            <h2 className=" text-xl sm:text-2xl text-start w-full font-bold">{INPUT_TEXT_WORDS_ARRAY[0] === "" ? 0 : INPUT_TEXT_WORDS_ARRAY.length} / {givenSentence?.split(" ").length}</h2>
+            <h2 className=" text-xl sm:text-2xl text-end w-full font-bold">{"00:"}{timeElapsed < 10 ? `0${timeElapsed}` : timeElapsed}</h2>
           </div>
             {givenSentence?.split(" ").map((word, wordIndex) => {
               const EQUAL_INDEX_WORD_INPUT = INPUT_TEXT_WORDS_ARRAY.at(wordIndex);
@@ -199,10 +230,10 @@ export default function TestBase() {
           </span>
           )})}
 
-      </div>
-      </div>
+        </div>
+        </div>
       {
-      <div className='absolute'>
+        <div className='absolute'>
       <input
           ref={inputRef}
           type="text"
@@ -214,6 +245,8 @@ export default function TestBase() {
         /></div> }
     </div>
     }
+    </div>
+    <Scoreboard isOpen={isOpen} onOpenChange={onOpenChange} result={result} />
     </>
   );
 }
