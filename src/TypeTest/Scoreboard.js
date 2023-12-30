@@ -22,9 +22,10 @@ const Scoreboard = ({isOpen , onOpenChange,result}) => {
     "Words"
   ];
   const clearResults = () => {
+    if (typeof window !== 'undefined') {
     localStorage?.removeItem('results');
     setResults([]);
-  };
+  }};
   const displayedScore = [...results]?.reverse() || [];
   return (
     <Modal 
