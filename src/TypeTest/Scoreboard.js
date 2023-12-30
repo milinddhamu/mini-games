@@ -7,6 +7,8 @@ const Scoreboard = ({isOpen , onOpenChange,result}) => {
   const fetchDataFromLocal = () => {
     if (typeof window !== 'undefined') {
       return JSON.parse(localStorage.getItem('results')) || []
+    } else {
+      return []
     }
   }
   
