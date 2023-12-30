@@ -140,15 +140,13 @@ export default function TestBase() {
   }, [isSameTest, showResults, result]);
   
   useEffect(()=>{
-    if(result){
+    if(result && typeof window !== 'undefined'){
       const storedResults = JSON.parse(localStorage.getItem('results')) || [];
       storedResults.push(result);
 
-      // Keep only the last 5 results
-      const lastFiveResults = storedResults.slice(-10);
+      const lastTenResults = storedResults?.slice(-10);
 
-      // Update localStorage with the last 5 results
-      localStorage.setItem('results', JSON.stringify(lastFiveResults));
+      localStorage.setItem('results', JSON.stringify(lastTenResults));
     }
   },[result]);
 
