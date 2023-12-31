@@ -9,7 +9,7 @@ import { PiCursorClick } from "react-icons/pi";
 import TypeTestResults from "./TypeTestResults";
 import io from 'socket.io-client';
 
-const socket = io('192.168.1.34:3001/typetest'); // Replace with your server URL
+const socket = io('https://typetest-ws-production.up.railway.app/typetest'); // Replace with your server URL
 
 
 export default function TestBaseOnline({ playerName, gameRoomId, currentAction, sentence }) {
@@ -26,16 +26,17 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction, 
   const [showResults, setShowResults] = useState(false);
   const [result, setResult] = useState(null);
   const [wordsMapParent] = useAutoAnimate(/* optional config */);
-  const [roomId, setRoomId] = useState('');
+  const [roomId, setRoomId] = useState(gameRoomId);
   const [playerJoined, setPlayerJoined] = useState(false);
 
 
   useEffect(() => {
     const handleGameUpdate = (data) => {
       console.log(data);
-      if(data.room){
+      if(data.room && data.sentence){
         const opponentName = data.room.players.find(player => player.id !== socket.id)?.name || '';
         setOpponentName(opponentName);
+        setGivenSentence(data.sentence);
       }
       if(data.isGameStart){
         setIsGameStart(data.isGameStart);
@@ -81,12 +82,13 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction, 
   }, []);
 
   useEffect(()=>{
-    socket.on('startTyping',({opponentText})=> {
-      console.log(opponentText)
-      if(opponentText){
-        setOpponentText(opponentText)
+    socket.on('opponentStartedTyping', ({ socketId, opponentText }) => {
+      // Check if the opponent's input is from the other player
+      if (socketId !== socket.id) {
+        // Update opponent's text in your state or wherever you're storing it
+        setOpponentText(opponentText);
       }
-    })
+    });
   },[])
 
 
@@ -141,7 +143,7 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction, 
   }, [isGameStart,gameStartTimer]);
 
   useEffect(() => {
-    if (timeElapsed === 15) {
+    if (timeElapsed === 150) {
       const results = calculateResults(sentence, text, timeElapsed);
       setResult(results);
       setShowResults(true);
@@ -228,7 +230,16 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction, 
                         letterIndex === 0 &&
                         text.at(-1) === " " &&
                         <span className={`absolute mt-[3px]`}>
-                          <AnimatedCaret />
+                          <AnimatedCaret isOpponent={false} />
+                        </span>
+                      }
+                      {
+                        isEditing &&
+                        INPUT_TEXT_WORDS_ARRAY_OPPONENT?.length === wordIndex &&
+                        letterIndex === 0 &&
+                        opponentText.at(-1) === " " &&
+                        <span className={`absolute mt-[3px]`}>
+                          <AnimatedCaret isOpponent={true} />
                         </span>
                       }
                       {letterIndex === 0 &&
@@ -236,14 +247,14 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction, 
                        isEditing &&
                        text === "" &&
                       <span className={`absolute mt-[3px]`}>
-                          <AnimatedCaret />
+                          <AnimatedCaret isOpponent={false} />
                         </span>}
                       {letterIndex === 0 &&
                        wordIndex === 0 &&
                        isEditing &&
                        opponentText === "" &&
                       <span className={`absolute mt-[3px]`}>
-                          <AnimatedCaret />
+                          <AnimatedCaret isOpponent={true} />
                         </span>}
                       {letter}
                       {
@@ -253,7 +264,7 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction, 
                         isEditing &&
                         text.at(-1) !== " " &&
                         <span className={`absolute mt-[3px]`}>
-                          <AnimatedCaret />
+                          <AnimatedCaret isOpponent={false} />
                         </span>
                       }
                       {
@@ -263,7 +274,7 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction, 
                         isEditing &&
                         opponentText.at(-1) !== " " &&
                         <span className={`absolute mt-[3px]`}>
-                          <AnimatedCaret />
+                          <AnimatedCaret isOpponent={true} />
                         </span>
                       }
 

@@ -15,7 +15,7 @@ const io = socketIo(server, {
 });
 
 const rooms = {};
-const testSentence = "Nuclear power is the use of nuclear reactions to produce electricity. Nuclear power can be obtained from nuclear fission, nuclear decay and nuclear fusion reactions. Presently, the vast majority of electricity from nuclear power is produced by nuclear fission of uranium and plutonium in nuclear power plants.";
+const sentence = "Nuclear power is the use of nuclear reactions to produce electricity. Nuclear power can be obtained from nuclear fission, nuclear decay and nuclear fusion reactions. Presently, the vast majority of electricity from nuclear power is produced by nuclear fission of uranium and plutonium in nuclear power plants.";
 
 const calculateWinner = (board) => {
   const markedCount = board.filter((cell) => cell.value !== '').length;
@@ -214,7 +214,7 @@ typetestNamespace.on('connection',(socket) => {
     const room = gameRoomId.trim().toLowerCase();
     if(!rooms[room]) {
       socket.join(room);
-      rooms[room] = {players:[{name: playerName , id: socket.id }],testSentence : testSentence}
+      rooms[room] = {players:[{name: playerName , id: socket.id }]}
       const opponent = rooms[room].players.find(player => player.id !== socket.id);
       const opponentName = opponent ? opponent.name : '';
       typetestNamespace.to(room).emit('gameUpdate', {
@@ -237,6 +237,7 @@ typetestNamespace.on('connection',(socket) => {
       existingRoom.players.push({ name: playerName, id: socket.id });
       let data = {
         room: existingRoom,
+        sentence:sentence
       }
       typetestNamespace.to(room).emit('gameUpdate', data);
       console.log(`${playerName} joined room ${room}`);
@@ -258,9 +259,10 @@ typetestNamespace.on('connection',(socket) => {
   });
   socket.on('startedTyping', ({input,socketId,gameRoomId}) => {
     const room = gameRoomId.trim().toLowerCase();
-    const data = {opponentText:"Hello world here"}
-    typetestNamespace.to(room).emit('startTyping',data);
-    
+    typetestNamespace.to(room).emit('opponentStartedTyping', {
+      socketId: socketId,
+      opponentText: input,
+    });
   });
 
 
@@ -282,7 +284,7 @@ typetestNamespace.on('connection',(socket) => {
 
     if (!isRoomCreator && players.length > 1) {
       const remainingPlayer = players.find(player => player.id !== socket.id);
-      tictactoeNamespace.to(room).emit('roomClosed', `The room has been closed by ${remainingPlayer.name}.`);
+      typetestNamespace.to(room).emit('roomClosed', `The room has been closed by ${remainingPlayer.name}.`);
     }
   }
   });
