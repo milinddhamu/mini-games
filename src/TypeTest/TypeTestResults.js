@@ -51,7 +51,7 @@ const TypeTestResults = ({data,handleRestart,handleStartSame,type}) => {
 
 
       </div>
-      {type === "player" || type === undefined &&
+      {type !== "opponent" &&
       <div className="flex flex-row items-center justify-center">
       <Tooltip 
       placement="top"
