@@ -41,7 +41,14 @@ export default function TestBase() {
       inputRef.current.focus();
     };
     if(isSameTest !== null){
-      setIsSameTest(null);
+      if (!isSameTest) {
+        setGivenSentence(()=>{
+          console.log("consoling inside handleClick")
+          const shuffledDataset = dataset.sort(() => Math.random() - 0.5);
+          const randomSentence = shuffledDataset.length > 0 ? shuffledDataset[0] : "";
+          return randomSentence
+        });
+      }
     }
   };
 
@@ -71,6 +78,7 @@ export default function TestBase() {
       setResult(results);
       setShowResults(true);
       setIsEditing(false);
+      setIsSameTest(null);
     }
   }, [timeElapsed , givenSentence , text]);
 
@@ -121,23 +129,15 @@ export default function TestBase() {
       setText("");
       setTimeElapsed(0);
       setResult(null);
-      setIsSameTest(null);
     };
     
   };
 
   useEffect(() => {
     if (!showResults && result === null) {
-      const shuffledDataset = dataset.sort(() => Math.random() - 0.5);
-      const randomSentence = shuffledDataset.length > 0 ? shuffledDataset[0] : "";
-      
-      if (!isSameTest) {
-        setGivenSentence(randomSentence);
-      }
-
       handleClick();
     }
-  }, [isSameTest, showResults, result]);
+  }, [showResults, result]);
   
   useEffect(()=>{
     if(result && typeof window !== 'undefined'){
