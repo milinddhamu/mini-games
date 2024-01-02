@@ -58,23 +58,23 @@ npm start
 
 ### [Tic Tac Toe (1v1 - Single Screen)](https://webduels.vercel.app/tictactoe)
 
-Challenge a friend to a classic game of Tic Tac Toe on a single screen. Enjoy the timeless fun of this strategic game in a friendly duel.
+> Challenge a friend to a classic game of Tic Tac Toe on a single screen. Enjoy the timeless fun of this strategic game in a friendly duel.
 
 ### [Tic Tac Toe (1v1 - Online Room)](https://webduels.vercel.app/tictactoe)
 
-Experience the thrill of playing Tic Tac Toe in real-time against a friend online. Create or join a room, and let the dueling begin with the power of WebSockets.
+> Experience the thrill of playing Tic Tac Toe in real-time against a friend online. Create or join a room, and let the dueling begin with the power of WebSockets.
 
 ### [TypeTest (1v1)](https://webduels.vercel.app/typetest)
 
-Put your typing skills to the test in a 1v1 TypeTest challenge. With a custom caret and a results page, compete against your friend to see who types the fastest and most accurately. You have 15 seconds to showcase your typing prowess.
+> Put your typing skills to the test in a 1v1 TypeTest challenge. With a custom caret and a results page, compete against your friend to see who types the fastest and most accurately. You have 15 seconds to showcase your typing prowess.
 
 ## Mobile Responsiveness
 
-Both games are designed to be fully responsive on mobile devices, ensuring an enjoyable gaming experience across various screen sizes.
+> Both games are designed to be fully responsive on mobile devices, ensuring an enjoyable gaming experience across various screen sizes.
 
 ## Contributing
 
-Feel free to contribute to this project by opening issues, submitting pull requests, or suggesting improvements. Let's make WebDuels even more exciting together!
+> Feel free to contribute to this project by opening issues, submitting pull requests, or suggesting improvements. Let's make WebDuels even more exciting together!
 
 ## License
 
