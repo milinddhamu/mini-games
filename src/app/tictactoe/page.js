@@ -5,7 +5,9 @@ import { useState } from "react";
 import {Switch} from "@nextui-org/react";
 import {Tooltip} from "@nextui-org/react";
 import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Checkbox, Input, Link} from "@nextui-org/react";
-export default function Home() {
+
+
+export default function Page() {
   const [gameMode , setGameMode] = useState(null);
   const {isOpen, onOpen, onOpenChange} = useDisclosure();
   const [gameRoomId , setGameRoomId] = useState(null);

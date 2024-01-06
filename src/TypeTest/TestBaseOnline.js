@@ -11,7 +11,7 @@ import dataset from "@/app/typetest/data";
 import { useDisclosure} from "@nextui-org/react";
 import io from 'socket.io-client';
 
-const socket = io('https://typetest-ws-production.up.railway.app/typetest'); // Replace with your server URL
+const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}/typetest`);; // Replace with your server URL
 
 
 export default function TestBaseOnline({ playerName, gameRoomId, currentAction }) {
