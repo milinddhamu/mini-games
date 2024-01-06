@@ -7,7 +7,7 @@ import Cross from "@/TicTacToe/Cross";
 import Confetti from 'react-confetti';
 import {Button} from "@nextui-org/button";
 
-const socket = io('https://typetest-ws-production.up.railway.app/tictactoe'); // Replace with your server URL
+const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}/tictactoe`); // Replace with your server URL
 
 const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
   const [turn, setTurn] = useState(true);

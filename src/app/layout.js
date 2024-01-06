@@ -4,8 +4,11 @@ import {Providers} from "./providers";
 import Topbar from "@/Components/Topbar";
 
 export const metadata = {
-  title: 'Online Mini Games',
+  title: 'Web Duels',
   description: 'TicTacToe, Rock Paper Scissors etc..',
+  icons: {
+    icon: '/favicon.png',
+  },
 }
 
 export default function RootLayout({ children }) {

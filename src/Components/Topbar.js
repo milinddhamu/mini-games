@@ -27,7 +27,6 @@ export default function Topbar() {
       <NavbarContent justify="end">
         <NavbarItem>
         <Switch
-            isSelected={theme === "dark"} 
             onValueChange={toggleTheme}
             defaultSelected
             size="md"
