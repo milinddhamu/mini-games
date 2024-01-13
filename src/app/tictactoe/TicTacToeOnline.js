@@ -7,7 +7,20 @@ import Cross from "@/TicTacToe/Cross";
 import Confetti from 'react-confetti';
 import {Button} from "@nextui-org/button";
 
-const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}/tictactoe`); // Replace with your server URL
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import generateAnonymousToken from '@/../server/helper/webSocketHelper'
+
+const secret = process.env.NEXT_PUBLIC_JWT_SECRET || "test"
+
+
+const token = generateAnonymousToken({secret});
+
+const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}/tictactoe`,{
+                auth: {
+                  token: token,
+                },
+              }); // Replace with your server URL
 
 const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
   const [turn, setTurn] = useState(true);
@@ -26,8 +39,15 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
     };
 
     socket.on('gameUpdate', handleGameUpdate);
+    socket.on('connect_error', (error) => {
+      console.log("Connection error:", error);
+    
+      // You can show an alert or update the UI to inform the user about the connection error
+      // For example, you might display a message on the page or redirect the user to an error page
+    });
 
     // Logic for handling socket events based on currentAction
+    if (socket.connected) {
     if (currentAction === 'create') {
       console.log('Creating room...');
       socket.emit('createRoom', { playerName, gameRoomId });
@@ -35,6 +55,18 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
       console.log('Joining room...');
       socket.emit('joinRoom', { playerName, gameRoomId });
       setRoomId(gameRoomId); // Update the room ID state
+    } } else {
+      toast.error('Socket is not connected, please try again!', {
+        position: "bottom-right",
+        autoClose: false,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: "Bounce",
+        });
     }
 
     // Clean up the effect
@@ -151,6 +183,9 @@ const TicTacToeOnline = ({ playerName, gameRoomId, currentAction }) => {
           numberOfPieces={300}
         />
       )}
+      <ToastContainer 
+      limit={1}
+      />
       </>
   );
 };
