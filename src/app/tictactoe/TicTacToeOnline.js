@@ -11,7 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import generateAnonymousToken from '@/../server/helper/webSocketHelper'
 
-const secret = process.env.NEXT_PUBLIC_JWT_SECRET 
+const secret = process.env.NEXT_PUBLIC_JWT_SECRET || "test"
 
 
 const token = generateAnonymousToken({secret});
