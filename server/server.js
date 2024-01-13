@@ -5,6 +5,9 @@ const app = express();
 const server = http.createServer(app);
 const cors = require('cors');
 const PORT = process.env.PORT || 3001;
+const jwt = require('jsonwebtoken')
+
+
 app.use(cors()); // Enable CORS for all routes
 
 const io = socketIo(server, {
@@ -14,7 +17,11 @@ const io = socketIo(server, {
   }
 });
 
+
+
 const rooms = {};
+const sentence = "Nuclear power is the use of nuclear reactions to produce electricity. Nuclear power can be obtained from nuclear fission, nuclear decay and nuclear fusion reactions. Presently, the vast majority of electricity from nuclear power is produced by nuclear fission of uranium and plutonium in nuclear power plants.";
+
 const calculateWinner = (board) => {
   const markedCount = board.filter((cell) => cell.value !== '').length;
   if (markedCount < 3) {
@@ -46,7 +53,42 @@ app.get('/', (req, res) => {
   res.send('Hello, World! This is your server responding.');
 });
 
-io.on('connection', (socket) => {
+app.get('/tictactoe', (req, res) => {
+  res.send('Welcome to the Tic Tac Toe game!');
+});
+
+app.get('/typetest', (req, res) => {
+  res.send('Welcome to the TypeTest game!');
+});
+
+
+
+
+const tictactoeNamespace = io.of('/tictactoe');
+  tictactoeNamespace.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+
+      if (!token) {
+        console.log("Authentication error");
+        const err = new Error("not authorized");
+        return next(err);
+      }
+
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+          console.log("Authentication error");
+          const err = new Error("not authorized");
+          return next(err);
+        }
+        // Attach the decoded user information to the socket object
+        socket.user = decoded;
+        next();
+      });
+    });
+
+  
+
+tictactoeNamespace.on('connection', (socket) => {
   console.log(`A user connected ${socket.id}`);
 
    socket.on('createRoom', ({ playerName, gameRoomId }) => {
@@ -65,7 +107,7 @@ io.on('connection', (socket) => {
         { position: 7, value: '' },
         { position: 8, value: '' },
       ], winner: null };
-      io.to(room).emit('gameUpdate', rooms[room]);
+      tictactoeNamespace.to(room).emit('gameUpdate', rooms[room]);
       console.log(`Room created: ${room} by ${playerName}`);
     } else {
       socket.emit('roomError', 'Room already exists');
@@ -106,10 +148,10 @@ io.on('connection', (socket) => {
   
       if (existingRoom.players.length === 2) {
         existingRoom.currentPlayerName = existingRoom.players.find(player => player.id !== socket.id).name;
-        io.to(room).emit('playerJoined', existingRoom.currentPlayerName);
+        tictactoeNamespace.to(room).emit('playerJoined', existingRoom.currentPlayerName);
       }
   
-      io.to(room).emit('gameUpdate', existingRoom);
+      tictactoeNamespace.to(room).emit('gameUpdate', existingRoom);
       console.log(`${playerName} joined room ${room}`);
     } else if (existingRoom && existingRoom.players.length >= 2) {
       // Handle room full
@@ -141,7 +183,7 @@ io.on('connection', (socket) => {
           currentPlayerName: existingRoom.players.find(player => player.id === existingRoom.turn).name,
         };
 
-        io.to(room).emit('gameUpdate', dataToSend);
+        tictactoeNamespace.to(room).emit('gameUpdate', dataToSend);
       } else {
         // Cell is already occupied, handle accordingly
         socket.emit('moveError', 'Cell is already occupied');
@@ -173,7 +215,7 @@ io.on('connection', (socket) => {
       existingRoom.turn = existingRoom.players[0].id; // Set turn to the first player
 
       // Broadcast the updated game state to all players in the room
-      io.to(room).emit('gameUpdate', existingRoom);
+      tictactoeNamespace.to(room).emit('gameUpdate', existingRoom);
     }
   });
 
@@ -195,11 +237,126 @@ io.on('connection', (socket) => {
 
     if (!isRoomCreator && players.length > 1) {
       const remainingPlayer = players.find(player => player.id !== socket.id);
-      io.to(room).emit('roomClosed', `The room has been closed by ${remainingPlayer.name}.`);
+      tictactoeNamespace.to(room).emit('roomClosed', `The room has been closed by ${remainingPlayer.name}.`);
     }
   }
   });
 });
+
+const typetestNamespace = io.of('/typetest');
+
+  typetestNamespace.use((socket, next) => {
+    const token = socket.handshake.auth.token;
+
+      if (!token) {
+        console.log("Authentication error");
+        const err = new Error("not authorized");
+        return next(err);
+      }
+
+      jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+        if (err) {
+          console.log("Authentication error");
+          const err = new Error("not authorized");
+          return next(err);
+        }
+        // Attach the decoded user information to the socket object
+        socket.user = decoded;
+        next();
+      });
+    });
+
+typetestNamespace.on('connection',(socket) => {
+  console.log(`auth connected ${socket.user?.userId}`);
+
+  console.log(`A user connected ${socket.id}`);
+
+  socket.on('createRoom',({playerName, gameRoomId}) => {
+    const room = gameRoomId.trim().toLowerCase();
+    if(!rooms[room]) {
+      socket.join(room);
+      rooms[room] = {players:[{name: playerName , id: socket.id }]}
+      const opponent = rooms[room].players.find(player => player.id !== socket.id);
+      const opponentName = opponent ? opponent.name : '';
+      typetestNamespace.to(room).emit('gameUpdate', {
+        room: rooms[room],
+        opponentName: opponentName,
+      });
+      console.log(`Room created: ${room} by ${playerName}`);
+    } else {
+      socket.emit('roomError', 'Room already exists');
+    }
+  })
+
+  socket.on('joinRoom', ({ playerName, gameRoomId }) => {
+    // Logic for joining a room
+    const room = gameRoomId.trim().toLowerCase();
+    const existingRoom = rooms[room];
+  
+    if (existingRoom && existingRoom.players.length < 2) {
+      socket.join(room);
+      existingRoom.players.push({ name: playerName, id: socket.id });
+      let data = {
+        room: existingRoom,
+        sentence:sentence
+      }
+      typetestNamespace.to(room).emit('gameUpdate', data);
+      console.log(`${playerName} joined room ${room}`);
+  
+    } else if (existingRoom && existingRoom.players.length >= 2) {
+      // Handle room full
+      socket.emit('roomError', 'Room is full');
+    } else {
+      // Handle room does not exist
+      socket.emit('roomError', 'Room does not exist');
+    }
+  });
+
+  socket.on('startTimerAndFocus', ({gameRoomId}) => {
+    const room = gameRoomId.trim().toLowerCase();
+    // Broadcast the event to all users in the room
+    let data = { isGameStart : true}
+    typetestNamespace.to(room).emit('gameUpdate',data);
+  });
+  socket.on('startedTyping', ({input,socketId,gameRoomId}) => {
+    const room = gameRoomId.trim().toLowerCase();
+    typetestNamespace.to(room).emit('opponentStartedTyping', {
+      socketId: socketId,
+      opponentText: input,
+    });
+  });
+  socket.on('restartGame', ({ gameRoomId }) => {
+    const room = gameRoomId.trim().toLowerCase();
+
+    // Broadcast the restart event to all users in the room
+    typetestNamespace.to(room).emit('gameRestart', { gameRoomId });
+  });
+
+  socket.on('disconnect', () => {
+    console.log('A user disconnected');
+    // Handle disconnect logic
+    const roomToRemove = Object.entries(rooms).find(([room, { players }]) =>
+    players.some(player => player.id === socket.id)
+  );
+
+  if (roomToRemove) {
+    const [room, { players }] = roomToRemove;
+    // Check if the disconnected user was the room creator
+    const isRoomCreator = players[0].id === socket.id;
+    // Remove the room from the rooms object
+    delete rooms[room];
+
+    console.log(`Room ${room} has been removed because the room creator left.`);
+
+    if (!isRoomCreator && players.length > 1) {
+      const remainingPlayer = players.find(player => player.id !== socket.id);
+      typetestNamespace.to(room).emit('roomClosed', `The room has been closed by ${remainingPlayer.name}.`);
+    }
+  }
+  });
+  
+})
+
 
 server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

@@ -10,10 +10,21 @@ import MemoizedTypeTestResults from "./TypeTestResults"
 import dataset from "@/app/typetest/data";
 import { useDisclosure} from "@nextui-org/react";
 import io from 'socket.io-client';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import generateAnonymousToken from '@/../server/helper/webSocketHelper'
 
-const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}/typetest`);; // Replace with your server URL
+const secret = process.env.NEXT_PUBLIC_JWT_SECRET 
 
 
+const token = generateAnonymousToken({secret});
+
+
+const socket = io(`${process.env.NEXT_PUBLIC_SERVER_URL}/typetest`,{
+                  auth: {
+                    token: token,
+                  },
+                });; // Replace with your server URL
 export default function TestBaseOnline({ playerName, gameRoomId, currentAction }) {
   const { theme, setTheme } = useTheme();
   const [text, setText] = useState("");
@@ -36,7 +47,6 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction }
   const [playerJoined, setPlayerJoined] = useState(false);
 
   // ONLINE MODE , SOCKET CODE FOR CLIENT SIDE
-
   useEffect(() => {
     const handleGameUpdate = (data) => {
       console.log(data);
@@ -49,16 +59,40 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction }
         setIsGameStart(data.isGameStart);
       }
     }
+    
     socket.on('gameUpdate', handleGameUpdate);
 
     // Logic for handling socket events based on currentAction
-    if (currentAction === 'create') {
-      console.log('Creating room...');
-      socket.emit('createRoom', { playerName, gameRoomId });
-    } else if (currentAction === 'join') {
-      console.log('Joining room...');
-      socket.emit('joinRoom', { playerName, gameRoomId });
-      setRoomId(gameRoomId); // Update the room ID state
+    socket.on('connect_error', (error) => {
+      console.log("Connection error:", error);
+    
+      // You can show an alert or update the UI to inform the user about the connection error
+      // For example, you might display a message on the page or redirect the user to an error page
+    });
+    
+    // Check the connection status before attempting to emit events
+    if (socket.connected) {
+      // Logic for handling socket events based on currentAction
+      if (currentAction === 'create') {
+        socket.emit('createRoom', { playerName, gameRoomId });
+      } else if (currentAction === 'join') {
+        console.log('Joining room...');
+        socket.emit('joinRoom', { playerName, gameRoomId });
+        setRoomId(gameRoomId); // Update the room ID state
+      }
+    } else {
+      // The socket is not connected, handle accordingly
+      toast.error('Socket is not connected, please try again!', {
+        position: "bottom-right",
+        autoClose: false,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: "Bounce",
+        });
     }
 
     // Clean up the effect
@@ -398,6 +432,9 @@ export default function TestBaseOnline({ playerName, gameRoomId, currentAction }
     }
     </div>
     <Scoreboard isOpen={isOpen} onOpenChange={onOpenChange} result={result} />
+    <ToastContainer 
+      limit={1}
+      />
     </>
   );
 }
